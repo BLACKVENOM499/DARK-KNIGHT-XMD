@@ -1,45 +1,58 @@
-const { cmd, commands } = require('../command');
-const { File } = require("megajs");
+const { cmd } = require('../command');
+const { File } = require('megajs');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
 
 cmd({
-    pattern: "mega",
-    desc: "commands panel",
-    react: "🎀",
+    pattern: "megadl",
+    alias: ["mega", "meganz"],
+    react: "📦",
+    desc: "Download ZIP or any file from Mega.nz",
+    category: "downloader",
+    use: '.megadl <mega file link>',
     filename: __filename
 },
-async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
+async (conn, mek, m, { from, q, reply }) => {
     try {
-    // Validate the provided URL
-    if (!q || !isUrl(q) || !q.includes("mega.nz")) {
-      return reply("Please provide a valid Mega.nz file URL.");
+        if (!q) return reply("📦 Please provide a Mega.nz file link.\n\nExample: `.megadl https://mega.nz/file/xxxx#key`");
+
+        // React: Processing
+        await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
+
+        // Initialize MEGA File from link
+        const file = File.fromURL(q);
+
+        // Download into buffer
+        const data = await new Promise((resolve, reject) => {
+            file.download((err, data) => {
+                if (err) reject(err);
+                else resolve(data);
+            });
+        });
+
+        // Create temp file path
+        const savePath = path.join(os.tmpdir(), file.name || "mega_file.zip");
+
+        // Save file locally
+        fs.writeFileSync(savePath, data);
+
+        // Send file
+        await conn.sendMessage(from, {
+            document: fs.readFileSync(savePath),
+            fileName: file.name || "JawadTechX.zip",
+            mimetype: "application/zip",
+            caption: "📦 Downloaded from Mega NZ\n\nPowered By Jawad TechX"
+        }, { quoted: mek });
+
+        // Delete temp file
+        fs.unlinkSync(savePath);
+
+        // React: Done
+        await conn.sendMessage(from, { react: { text: '✅', key: m.key } });
+
+    } catch (error) {
+        console.error("❌ MEGA Downloader Error:", error);
+        reply("❌ Failed to download file from Mega.nz. Make sure the link is valid and file is accessible.");
     }
-
-    // Extract file URL and decryption key
-    const [fileUrl, decryptionKey] = q.split('#');
-    if (!decryptionKey) {
-      return reply("Error: Decryption key is missing in the provided URL.");
-    }
-
-    // Start file download
-    const megaFile = File.fromURL(fileUrl + '#' + decryptionKey);
-    megaFile.on("progress", (downloaded, total) => {
-      const progressPercentage = ((downloaded / total) * 100).toFixed(2);
-      reply(`Downloading: ${progressPercentage}% (${(downloaded / 1024 / 1024).toFixed(2)} MB of ${(total / 1024 / 1024).toFixed(2)} MB)`);
-    });
-
-    // Download file and send it
-    const fileBuffer = await megaFile.downloadBuffer();
-    const documentMessage = {
-      document: fileBuffer,
-      mimetype: "application/octet-stream",
-      fileName: "mega_downloaded_file"
-    };
-
-    const options = { quoted: message };
-    await conn.sendMessage(from, documentMessage, options);
-    reply("*create by pakaya*");
-  } catch (error) {
-    console.error(error);
-    reply("Error: " + error.message);
-  }
 });
