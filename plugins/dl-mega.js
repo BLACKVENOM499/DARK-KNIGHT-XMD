@@ -4,9 +4,55 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
+ 
 cmd({
-    pattern: "mega",
-    alias: ["meganz"],
+  pattern: "mega",
+  alias: ["meganz"],
+  desc: "Download Mega.nz files",
+  react: "🌐",
+  category: "download",
+  filename: __filename
+}, async (conn, m, store, {
+  from,
+  q,
+  reply
+}) => {
+  try {
+    if (!q) return reply("❌ Please provide a Mega.nz link.");
+
+    await conn.sendMessage(from, { react: { text: "⬇️", key: m.key } });
+
+    const apiUrl = `https://foreign-marna-sithaunarathnapromax-9a005c2e.koyeb.app/api/mega?url=${encodeURIComponent(q)}&apiKey=8aa84b98c64dd692096dfe25574fada554187236bcfad3c9ea8f1af6f5d1b25b`;
+
+    const { data } = await axios.get(apiUrl);
+
+    if (!data || !data.result || !data.result.length) {
+      return reply("⚠️ No file found. Invalid Mega link.");
+    }
+
+    const file = data.result[0];
+
+    await conn.sendMessage(from, { react: { text: "⬆️", key: m.key } });
+
+    await conn.sendMessage(from, {
+      document: { url: file.link },
+      fileName: file.name || "mega_file",
+      mimetype: "video/mp4",
+      caption: `📁 *File:* ${file.name}\n📦 *Size:* ${(file.size / 1024 / 1024).toFixed(2)} MB\n\n*© Powered By 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳*`
+    }, { quoted: m });
+
+    await conn.sendMessage(from, { react: { text: "✅", key: m.key } });
+
+  } catch (e) {
+    console.error("Mega Error:", e);
+    reply("❌ Failed to download Mega file.");
+  }
+});
+
+
+cmd({
+    pattern: "mega2",
+    alias: ["meganz2"],
     react: "📦",
     desc: "Download ZIP or any file from Mega.nz",
     category: "downloader",
@@ -54,51 +100,5 @@ async (conn, mek, m, { from, q, reply }) => {
     } catch (error) {
         console.error("❌ MEGA Downloader Error:", error);
         reply("❌ Failed to download file from Mega.nz. Make sure the link is valid and file is accessible.");
-    }
-});
-
-
- cmd({
-    pattern: "mega2",
-    react: "🍟",
-    alias: ["megadl","meganz2"],
-    desc: "Mega.nz fils download",
-    category: "download",
-    use: '.mega url',
-    filename: __filename
-}, 
-    async (conn, mek, m, { from, q, reply }) => {
-    if (!q) {
-        return await reply(mega);
-    }
-
-    try {
-        const file = File.fromURL(q)
-        await file.loadAttributes()
-        //if (file.size >= 2048 * 1024 * 1024) return reply(`File size exeeded...\nMaximum Upload Size Is ${config.MAX_SIZ} MB`)
-        const data = await file.downloadBuffer();
-        
-        if (/mp4/.test(file.name)) {
-            await conn.sendMessage(from, { document: data, mimetype: "video/mp4", filename: `${file.name || "DARK-KNIGHT-XMD"}` }, { quoted: mek });
-        } else if (/pdf/.test(file.name)) {
-            await conn.sendMessage(from, { document: data, mimetype: "application/pdf", filename: `${file.name || "DARK-KNIGHT-XMD"}` }, { quoted: mek });
-        } else if (/zip/.test(file.name)) {
-            await conn.sendMessage(from, { document: data, mimetype: "application/zip", filename: `${file.name || "DARK-KNIGHT-XMD"}` }, { quoted: mek });
-        } else if (/rar/.test(file.name)) {
-            await conn.sendMessage(from, { document: data, mimetype: "application/x-rar-compressed", filename: `${file.name || "DARK-KNIGHT-XMD"}` }, { quoted: mek });
-        } else if (/7z/.test(file.name)) {
-            await conn.sendMessage(from, { document: data, mimetype: "application/x-7z-compressed", filename: `${file.name || "DARK-KNIGHT-XMD"}` }, { quoted: mek });
-        } else if (/jpg|jpeg/.test(file.name)) {
-            await conn.sendMessage(from, { document: data, mimetype: "image/jpeg", filename: `${file.name || "DARK-KNIGHT-XMD"}` }, { quoted: mek });
-        } else if (/png/.test(file.name)) {
-            await conn.sendMessage(from, { document: data, mimetype: "image/png", filename: `${file.name || "DARK-KNIGHT-XMD"}` }, { quoted: mek });
-        } else {
-            await conn.sendMessage(from, { document: data, mimetype: "application/octet-stream", filename: `${file.name || "DARK-KNIGHT-XMD"}` }, { quoted: mek })
-        }
-        
-        await conn.sendMessage(from, { react: { text: '✅', key: mek.key } });
-    } catch (e) {
-        console.log(e)
-        reply(`${e}`)
     }
 });
