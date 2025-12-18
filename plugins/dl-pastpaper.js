@@ -98,11 +98,11 @@ cmd({
           caption: `📚 ${d.download_info.file_title}\n\n> Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`
         }, { quoted: m2 });
 
-        conn.ev.on("messages.upsert", downloadListener);
+        conn.ev.off("messages.upsert", downloadListener);
       };
 
       conn.ev.on("messages.upsert", downloadListener);
-      conn.ev.on("messages.upsert", listener);
+      conn.ev.off("messages.upsert", listener);
     };
 
     conn.ev.on("messages.upsert", listener);
