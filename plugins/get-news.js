@@ -2,6 +2,105 @@ const { cmd } = require('../command');
 const axios = require('axios');
 
 
+
+cmd({
+    pattern: "newss1",
+    desc: "Get latest Sri Lankan news (Carousel)",
+    category: "news",
+    react: "📰",
+    filename: __filename
+},
+async (conn, mek, m, { from, reply }) => {
+    try {
+
+        const sources = [
+            { name: "Lankadeepa LK", url: "https://saviya-kolla-api.koyeb.app/news/lankadeepa" },
+            { name: "Ada News", url: "https://saviya-kolla-api.koyeb.app/news/ada" },
+            { name: "Sirasa News", url: "https://saviya-kolla-api.koyeb.app/news/sirasa" },
+            { name: "Gagana News", url: "https://saviya-kolla-api.koyeb.app/news/gagana" },
+            { name: "Lankadeepa", url: "https://vajira-api.vercel.app/news/lankadeepa" },
+            { name: "Lanka News Web", url: "https://vajira-api.vercel.app/news/lnw" },
+            { name: "Siyatha News", url: "https://vajira-api.vercel.app/news/siyatha" },
+            { name: "Gossip Lanka", url: "https://vajira-api.vercel.app/news/gossiplankanews" }
+        ];
+
+        const defaultImage = "https://files.catbox.moe/hspst7.jpg";
+        let cards = [];
+
+        reply("📡 *Fetching latest Sri Lankan news…*");
+
+        for (const src of sources) {
+            try {
+                const res = await axios.get(src.url, { timeout: 15000 });
+                const result = res.data?.result;
+                if (!result) continue;
+
+                cards.push({
+                    header: {
+                        title: src.name,
+                        hasMediaAttachment: true,
+                        imageMessage: {
+                            url: result.image || result.thumbnail || defaultImage
+                        }
+                    },
+                    body: {
+                        text:
+                            `🗞️ *${result.title || "No Title"}*\n\n` +
+                            `${result.desc || "No description available."}`
+                    },
+                    footer: {
+                        text: result.date || "Latest Update"
+                    },
+                    nativeFlowMessage: {
+                        buttons: [
+                            {
+                                name: "cta_url",
+                                buttonParamsJson: JSON.stringify({
+                                    display_text: "🔗 Read Full News",
+                                    url: result.url || result.link || "https://google.com"
+                                })
+                            }
+                        ]
+                    }
+                });
+
+            } catch (err) {
+                console.log(`❌ Failed: ${src.name}`);
+            }
+        }
+
+        if (cards.length === 0) {
+            return reply("❌ No news available right now.");
+        }
+
+        const carouselMessage = {
+            interactiveMessage: {
+                header: {
+                    title: "📰 Sri Lankan Latest News",
+                    subtitle: "Multiple Trusted Sources",
+                    hasMediaAttachment: false
+                },
+                body: {
+                    text: "Swipe ▶️ to read the latest headlines"
+                },
+                footer: {
+                    text: "© Powered by DARK-KNIGHT-XMD"
+                },
+                carouselMessage: {
+                    cards: cards
+                }
+            }
+        };
+
+        await conn.sendMessage(from, carouselMessage, { quoted: mek });
+
+    } catch (e) {
+        console.error(e);
+        reply("⚠️ Error fetching news. Try again later.");
+    }
+});
+
+
 cmd({
     pattern: "news",
     desc: "Get the latest Ada Derana Sinhala news headlines (all in one message).",
