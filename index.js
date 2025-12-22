@@ -311,7 +311,6 @@ if (!isReact && senderNumber === botNumber) {
 const id = mek.key.server_id
 const defaultEmojis = ["❤️", "💖", "💚", "💙","💛"];
 const randomEmoji = defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
-await conn.newsletterReactMessage(`${recc.mainchanal}`, id, randomEmoji);
 await conn.newsletterReactMessage(`120363400240662312@newsletter`, id, randomEmoji);
 
 //==========Sudo and Mode ============ 
