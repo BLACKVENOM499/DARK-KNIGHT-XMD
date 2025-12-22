@@ -1,10 +1,11 @@
 const { cmd } = require('../command');
 const { File } = require('megajs');
-const fs = require('fs');
+const axios = require('axios');
 const path = require('path');
+const fs = require('fs');
 const os = require('os');
 
- 
+
 cmd({
   pattern: "mega",
   alias: ["meganz"],
@@ -16,35 +17,42 @@ cmd({
   try {
     if (!q) return reply("❌ Please provide a Mega.nz link.");
 
+    // ✅ Auto encode Mega URL
+    const encodedUrl = encodeURIComponent(q);
+
+    // React: downloading
     await conn.sendMessage(from, { react: { text: "⬇️", key: m.key } });
 
-    const apiUrl = `https://api-dark-shan-yt.koyeb.app/download/meganz?url=${encodeURIComponent(q)}&apikey=1234567890qazwsx`;
-
+    // API call
+    const apiUrl = `https://api-dark-shan-yt.koyeb.app/download/meganz?url=${encodedUrl}&apikey=1234567890qazwsx`;
     const { data } = await axios.get(apiUrl);
 
-    // ✅ Correct response check
-    if (!data.status || !data.data || !data.data.result.length) {
+    // Validate API response
+    if (!data.status || !data.data?.result?.length) {
       return reply("⚠️ Invalid Mega link or API error.");
     }
 
     const file = data.data.result[0];
 
+    // React: uploading
     await conn.sendMessage(from, { react: { text: "⬆️", key: m.key } });
 
+    // Send document
     await conn.sendMessage(from, {
       document: { url: file.download },
-      fileName: file.name || "mega_file.zip",
+      fileName: file.name,
       mimetype: "application/octet-stream",
       caption:
         `📁 *File:* ${file.name}\n` +
-        `📦 *Size:* ${(file.size / 1024).toFixed(2)} KB\n\n` +
+        `📦 *Size:* ${(file.size / 1024 / 1024).toFixed(2)} MB\n\n` +
         `*© Powered By 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳*`
     }, { quoted: m });
 
+    // React: done
     await conn.sendMessage(from, { react: { text: "✅", key: m.key } });
 
-  } catch (e) {
-    console.error("Mega Error:", e);
+  } catch (err) {
+    console.error("Mega Plugin Error:", err);
     reply("❌ Failed to download Mega file.");
   }
 });
