@@ -3,7 +3,7 @@ const { cmd } = require("../command");
 
 cmd({
   pattern: "pixeldrain",
-  alias: ["pd"],
+  alias: ["pix"],
   desc: "Download PixelDrain files",
   react: "🌐",
   category: "download",
