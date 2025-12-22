@@ -12,33 +12,33 @@ cmd({
   react: "🌐",
   category: "download",
   filename: __filename
-}, async (conn, m, store, {
-  from,
-  q,
-  reply
-}) => {
+}, async (conn, m, store, { from, q, reply }) => {
   try {
     if (!q) return reply("❌ Please provide a Mega.nz link.");
 
     await conn.sendMessage(from, { react: { text: "⬇️", key: m.key } });
 
-    const apiUrl = `https://foreign-marna-sithaunarathnapromax-9a005c2e.koyeb.app/api/mega?url=${encodeURIComponent(q)}&apiKey=8aa84b98c64dd692096dfe25574fada554187236bcfad3c9ea8f1af6f5d1b25b`;
+    const apiUrl = `https://api-dark-shan-yt.koyeb.app/download/meganz?url=${encodeURIComponent(q)}&apikey=1234567890qazwsx`;
 
     const { data } = await axios.get(apiUrl);
 
-    if (!data || !data.result || !data.result.length) {
-      return reply("⚠️ No file found. Invalid Mega link.");
+    // ✅ Correct response check
+    if (!data.status || !data.data || !data.data.result.length) {
+      return reply("⚠️ Invalid Mega link or API error.");
     }
 
-    const file = data.result[0];
+    const file = data.data.result[0];
 
     await conn.sendMessage(from, { react: { text: "⬆️", key: m.key } });
 
     await conn.sendMessage(from, {
-      document: { url: file.link },
-      fileName: file.name || "mega_file",
-      mimetype: "video/mp4",
-      caption: `📁 *File:* ${file.name}\n📦 *Size:* ${(file.size / 1024 / 1024).toFixed(2)} MB\n\n*© Powered By 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳*`
+      document: { url: file.download },
+      fileName: file.name || "mega_file.zip",
+      mimetype: "application/octet-stream",
+      caption:
+        `📁 *File:* ${file.name}\n` +
+        `📦 *Size:* ${(file.size / 1024).toFixed(2)} KB\n\n` +
+        `*© Powered By 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳*`
     }, { quoted: m });
 
     await conn.sendMessage(from, { react: { text: "✅", key: m.key } });
