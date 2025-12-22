@@ -41,7 +41,7 @@ const {
   const os = require('os')
   const Crypto = require('crypto')
   const path = require('path')
-  const prefix = config.PREFIX
+  const { getPrefix } = require('./lib/prefix')
   
   const ownerNumber = ['94771825192']
   
