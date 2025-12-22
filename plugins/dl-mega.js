@@ -18,43 +18,42 @@ cmd({
     if (!q) 
       return reply("❌ Please provide a Mega.nz link.\n\nExample: `.mega https://mega.nz/file/xxxx#key`");
 
-    // 1️⃣ Auto encode Mega URL for API
     const encodedUrl = encodeURIComponent(q);
-
-    // 2️⃣ React: downloading
+    
     await conn.sendMessage(from, { react: { text: "⬇️", key: m.key } });
 
-    // 3️⃣ Call API
     const apiUrl = `https://api-dark-shan-yt.koyeb.app/download/meganz?url=${encodedUrl}&apikey=1234567890qazwsx`;
     const { data } = await axios.get(apiUrl);
 
-    // 4️⃣ Validate API response
+    console.log("API Response:", JSON.stringify(data, null, 2));
+
     if (!data.status || !data.data?.result?.length) {
       return reply("⚠️ Invalid Mega link or API error.");
     }
 
     const file = data.data.result[0];
 
-    // 5️⃣ React: uploading
+    if (!file.download) {
+      return reply("⚠️ No download link returned by API. The file may be removed or unavailable.");
+    }
+
     await conn.sendMessage(from, { react: { text: "⬆️", key: m.key } });
 
-    // 6️⃣ Send the file
     await conn.sendMessage(from, {
       document: { url: file.download },
-      fileName: file.name,
-      mimetype: "video/mp4",
+      fileName: file.name || "mega_file.zip",
+      mimetype: "application/octet-stream",
       caption:
         `📁 *File:* ${file.name}\n` +
         `📦 *Size:* ${(file.size / 1024 / 1024).toFixed(2)} MB\n\n` +
         `*© Powered By 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳*`
     }, { quoted: m });
 
-    // 7️⃣ React: done
     await conn.sendMessage(from, { react: { text: "✅", key: m.key } });
 
   } catch (err) {
     console.error("Mega Plugin Error:", err);
-    reply("❌ Failed to download Mega file. Make sure the link is correct.");
+    reply("❌ Failed to download Mega file. Make sure the link is correct and API is working.");
   }
 });
 
