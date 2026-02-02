@@ -128,7 +128,7 @@ cmd({
 > Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`;
 
     const sentMsg = await conn.sendMessage(from, {
-      image: { url: media.thumbUrl },
+      image: { url: thumbUrl },
       caption
     }, { quoted: m });
 
