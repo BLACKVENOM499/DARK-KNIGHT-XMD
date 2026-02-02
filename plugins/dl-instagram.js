@@ -128,48 +128,55 @@ cmd({
 > Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`;
 
     const sentMsg = await conn.sendMessage(from, {
-      image: { url: thumbUrl },
+      image: { url: media.thumbUrl },
       caption
     }, { quoted: m });
 
-    const msgId = sentMsg.key.id;
+    const messageID = sentMsg.key.id;
 
-    // Reply selector
-    conn.ev.on("messages.upsert", async ({ messages }) => {
-      const msg = messages[0];
-      if (!msg?.message) return;
+    // 🧠 Listen for user reply
+    conn.ev.on("messages.upsert", async (msgData) => {
+      const receivedMsg = msgData.messages[0];
+      if (!receivedMsg?.message) return;
 
-      const text =
-        msg.message.conversation ||
-        msg.message.extendedTextMessage?.text;
+      const receivedText = receivedMsg.message.conversation || receivedMsg.message.extendedTextMessage?.text;
+      const senderID = receivedMsg.key.remoteJid;
+      const isReplyToBot = receivedMsg.message.extendedTextMessage?.contextInfo?.stanzaId === messageID;
 
-      const isReply =
-        msg.message.extendedTextMessage?.contextInfo?.stanzaId === msgId;
+      if (isReplyToBot) {
+        await conn.sendMessage(senderID, { react: { text: '⏳', key: receivedMsg.key } });
 
-      if (!isReply) return;
+        switch (receivedText.trim()) {
+          case "1":
+            if (media.type === "video") {
+              await conn.sendMessage(senderID, {
+                video: { url: videoUrl },
+                caption: "📥 *Video Downloaded Successfully!*"
+              }, { quoted: receivedMsg });
+            } else {
+              reply("⚠️ No video found for this post.");
+            }
+            break;
 
-      if (text === "1") {
-        await conn.sendMessage(from, {
-          video: { url: videoUrl },
-          caption: "✅ *Video Downloaded Successfully*"
-        }, { quoted: msg });
+          case "2":
+              await conn.sendMessage(senderID, {
+                audio: { url: videoUrl },
+                mimetype: "audio/mp4",
+                ptt: false
+              }, { quoted: receivedMsg });
+            break;
 
-      } else if (text === "2") {
-        await conn.sendMessage(from, {
-          audio: { url: videoUrl },
-          mimetype: "audio/mp4"
-        }, { quoted: msg });
-
-      } else {
-        reply("❌ Reply only 1 or 2.");
+          default:
+            reply("❌ Invalid option! Please reply with 1 or 2.");
+        }
       }
     });
 
-  } catch (err) {
-    console.error("IG Plugin Error:", err);
-    reply("❌ Error occurred. Try again later.");
+  } catch (error) {
+    console.error("Instagram Plugin Error:", error);
+    reply("❌ An error occurred while processing your request. Please try again later.");
   }
-});   
+});
 
 cmd({
   pattern: "igdl",
