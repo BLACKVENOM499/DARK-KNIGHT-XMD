@@ -91,19 +91,19 @@ cmd({
             .sort(() => 0.5 - Math.random())
             .slice(0, 5);
 
-        for (const Url of selectedImages) {
+        for (const url of selectedImages) {
             try {
                 await conn.sendMessage(
                     from,
                     {
-                        image: { url: Url },
+                        image: { url: url },
                         caption: `🖼️ Image for: *${query}*\n\nRequested by: @${m.sender.split('@')[0]}\n> © Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`,
                         contextInfo: { mentionedJid: [m.sender] }
                     },
                     { quoted: mek }
                 );
             } catch (err) {
-                console.warn(`⚠️ Failed to send Image: ${Url}`);
+                console.warn(`⚠️ Failed to send Image: ${url}`);
             }
 
             await new Promise(resolve => setTimeout(resolve, 1000));
