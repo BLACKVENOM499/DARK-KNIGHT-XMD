@@ -83,11 +83,11 @@ cmd({
             return reply("❌ No Images found. Try a different keyword.");
         }
 
-        const results = response.data.results;
-        await reply(`✅ Found *${results.length}* Images for *"${query}"*. Sending top 5...`);
+        const result = response.data.results;
+        await reply(`✅ Found *${result.length}* Images for *"${query}"*. Sending top 5...`);
 
         // Randomly pick 5 images
-        const selectedImages = results
+        const selectedImages = result
             .sort(() => 0.5 - Math.random())
             .slice(0, 5);
 
