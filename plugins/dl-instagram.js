@@ -148,7 +148,6 @@ cmd({
 
         switch (receivedText.trim()) {
           case "1":
-            if (media.type === "video") {
               await conn.sendMessage(senderID, {
                 video: { url: videoUrl },
                 caption: "📥 *Video Downloaded Successfully!*"
