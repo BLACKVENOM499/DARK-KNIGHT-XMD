@@ -91,7 +91,7 @@ cmd({
             .sort(() => 0.5 - Math.random())
             .slice(0, 5);
 
-        for (const imageUrl of selectedImages) {
+        for (const Url of selectedImages) {
             try {
                 await conn.sendMessage(
                     from,
