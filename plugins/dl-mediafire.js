@@ -19,31 +19,31 @@ cmd({
     await conn.sendMessage(from, { react: { text: '⏳', key: m.key } });
 
     // Build the API URL
-    const apiUrl = `https://sadiya-tech-apis.vercel.app/download/mfiredl?url=${encodeURIComponent(q)}&apikey=YOU_API_KEY`;
+    const apiUrl = `https://ominisave.vercel.app/api/mfire?url=${encodeURIComponent(q)}`;
 
     // Fetch from API
     const { data } = await axios.get(apiUrl);
 
     // Validate response
-    if (!data.status || !data.result || !data.result.dl_link) {
+    if (!data.status || !data.result || !data.result.download) {
       return reply('❌ Unable to fetch the file. Please try again later or check the URL.');
     }
 
     // Extract details
-    const { fileName, date, fileType, size, dl_link } = data.result;
+    const { fileName, uploaded, fileType, size, download } = data.result;
 
     // Inform user
     await reply(`📥 *Downloading:* ${fileName}\n*Size:* ${size}\nPlease wait...`);
 
     // Download file
-    const fileResponse = await axios.get(dl_link, { responseType: 'arraybuffer' });
+    const fileResponse = await axios.get(download, { responseType: 'arraybuffer' });
 
     // Send file
     await conn.sendMessage(from, {
       document: fileResponse.data,
       mimetype: fileType || 'application/octet-stream',
       fileName: fileName,
-      caption: `📂 *File Name:* ${fileName}\n📦 *Size:* ${size}\n📅 *Uploaded:* ${date}\n`,
+      caption: `📂 *File Name:* ${fileName}\n📦 *Size:* ${size}\n📅 *Uploaded:* ${uploaded}\n`,
       contextInfo: {
         mentionedJid: [m.sender],
         forwardingScore: 999,
