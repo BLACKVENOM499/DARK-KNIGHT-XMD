@@ -152,9 +152,6 @@ cmd({
                 video: { url: videoUrl },
                 caption: "📥 *Video Downloaded Successfully!*"
               }, { quoted: receivedMsg });
-            } else {
-              reply("⚠️ No video found for this post.");
-            }
             break;
 
           case "2":
