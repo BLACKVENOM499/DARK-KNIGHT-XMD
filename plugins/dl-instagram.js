@@ -105,7 +105,7 @@ cmd({
       react: { text: "⏳", key: m.key }
     });
 
-    const api = `https://sadiya-tech-apis.vercel.app/download/igdl?url=${encodeURIComponent(q)}&apikey=YOUR_API_KEY`;
+    const api = `https://ominisave.vercel.app/api/insta?url=${encodeURIComponent(q)}`;
     const { data } = await axios.get(api);
 
     if (!data.status || !data.result?.downloads?.video) {
