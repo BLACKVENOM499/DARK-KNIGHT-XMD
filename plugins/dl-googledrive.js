@@ -143,10 +143,10 @@ cmd({
     await conn.sendMessage(from, { react: { text: "⬇️", key: m.key } });
 
     // New Sadiya Tech API
-    const apiUrl = `https://sadiya-tech-apis.vercel.app/download/gdrivedl?url=${encodeURIComponent(q)}&apikey=YOU_API_KEY`;
+    const apiUrl = `https://visper-md-ap-is.vercel.app/download/gdrive?q=${encodeURIComponent(q)}`;
     const response = await axios.get(apiUrl);
 
-    if (response.data.status && response.data.result) {
+    if (response.data.success && response.data.result) {
       const { downloadUrl, mimetype, fileName } = response.data.result;
 
       await conn.sendMessage(from, { react: { text: "⬆️", key: m.key } });
@@ -155,7 +155,7 @@ cmd({
         document: { url: downloadUrl },
         mimetype: mimetype,
         fileName: fileName,
-        caption: "*© Powered By 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳*"
+        caption: `${fileName}\n*© Powered By 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳*`
       }, { quoted: m });
 
       await conn.sendMessage(from, { react: { text: "✅", key: m.key } });
