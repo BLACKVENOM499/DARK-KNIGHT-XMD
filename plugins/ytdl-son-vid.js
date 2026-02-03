@@ -122,10 +122,10 @@ cmd({
 
         // Define API links for multiple qualities
         const formats = {
-            "240p": `https://sadiya-tech-apis.vercel.app/download/ytdl?url=${encodeURIComponent(ytUrl)}&format=240&apikey=YOU_API_KEY`,
-            "360p": `https://sadiya-tech-apis.vercel.app/download/ytdl?url=${encodeURIComponent(ytUrl)}&format=360&apikey=YOU_API_KEY`,
-            "480p": `https://sadiya-tech-apis.vercel.app/download/ytdl?url=${encodeURIComponent(ytUrl)}&format=480&apikey=YOU_API_KEY`,
-            "720p": `https://sadiya-tech-apis.vercel.app/download/ytdl?url=${encodeURIComponent(ytUrl)}&format=720&apikey=YOU_API_KEY`
+            "240p": `https://www.movanest.xyz/v2/ytdown?url=${encodeURIComponent(ytUrl)}&quality=240`,
+            "360p": `https://www.movanest.xyz/v2/ytdown?url=${encodeURIComponent(ytUrl)}&quality=360`,
+            "480p": `https://www.movanest.xyz/v2/ytdown?url=${encodeURIComponent(ytUrl)}&quality=480`,
+            "720p": `https://www.movanest.xyz/v2/ytdown?url=${encodeURIComponent(ytUrl)}&quality=720`
         };
 
         // Prepare caption
@@ -193,21 +193,21 @@ cmd({
 
                 const { data: apiRes } = await axios.get(formats[selectedFormat]);
 
-                if (!apiRes?.status || !apiRes.result?.download) {
+                if (!apiRes?.status || !apiRes.download) {
                     return reply(`❌ Unable to download the ${selectedFormat} version. Try another one!`);
                 }
 
-                const result = apiRes.result;
+                const download = apiRes.download;
 
                 if (isDocument) {
                     await conn.sendMessage(senderID, {
-                        document: { url: result.download },
+                        document: { url: download.link },
                         mimetype: "video/mp4",
                         fileName: `${data.title}.mp4`
                     }, { quoted: receivedMsg });
                 } else {
                     await conn.sendMessage(senderID, {
-                        video: { url: result.download },
+                        video: { url: download.link },
                         mimetype: "video/mp4",
                         ptt:false,
                     }, { quoted: receivedMsg });
