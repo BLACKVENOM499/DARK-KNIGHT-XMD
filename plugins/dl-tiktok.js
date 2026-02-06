@@ -22,8 +22,6 @@ cmd({
     if (!data || !data.status || !data.data) {
       return reply("⚠️ Failed to retrieve TikTok media. Please check the link and try again.");
     }
-
-    const result = data.data;
     
     const caption = `
 📺 Tiktok Downloader. 📥
