@@ -78,7 +78,7 @@ cmd(
                 `⏰ *Duration:* ${infoMap.duration}\n\n` +
                 `🔢 *Reply Below Number:*\n\n` +
                 `1️⃣ *Video High Quality*\n` +
-                `1️⃣ *Video Low Quality*\n\n` + tharuzz_footer
+                `2️⃣ *Video Low Quality*\n\n` + tharuzz_footer
             }, { quoted:msg }
         );
             
