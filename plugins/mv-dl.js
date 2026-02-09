@@ -392,27 +392,22 @@ cmd({
 
         await conn.sendMessage(from, { react: { text: "🎯", key: msg.key } });
 
-        const movieUrl = `https://my-apis-site.vercel.app/movie/sinhalasub/movie?url=${encodeURIComponent(selected.link)}&apikey=charuka-key-666`;
+        const movieUrl = `https://sinhalasubdl.vercel.app/api/download?url=${encodeURIComponent(selected.link)}`;
         const movieRes = await axios.get(movieUrl);
         const movie = movieRes.data.result;
-        
-        const dlLinks = movie?.dl_links?.Server2;
-        
-        if (!movie?.dllinks?.Server2?.length) {
+        movie.downloads = movie.downloads.filter(d => d.direct_link.includes("pixeldrain.com"));
+       
+        if (!movie.downloads?.length) {
           return conn.sendMessage(from, { text: "*No download links available.*" }, { quoted: msg });
         }
 
         let info =
           `🎬 *${movie.title}*\n\n` +
-          `⭐ *IMDb:* ${movie.imdb}\n` +
-          `📅 *Released:* ${movie.releaseDate}\n` +
-          `🌍 *Country:* ${movie.country}\n` +
-          `🕐 *Runtime:* ${movie.duration}\n` +
-          `✍️ *Author:* ${movie.director}\n` +
-          `📝 *Description:*\n${movie.description}\n\n` +
+          `📅 *Released:* ${movie.year}\n` +
+          `🕐 *Runtime:* ${movie.duration}\n\n` +
           `🎥 *𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅 𝑳𝒊𝒏𝒌𝒔:* 📥\n\n`;
 
-         dllinks.forEach((d, i) => {
+         mobie.downloads.forEach((d, i) => {
           info += `♦️ ${i + 1}. *${d.quality}* — ${d.size}\n`;
         });
         info += "\n🔢 *Reply with number to download.*";
@@ -422,7 +417,7 @@ cmd({
           caption: info
         }, { quoted: msg });
 
-        movieMap.set(downloadMsg.key.id, { selected, downloads: dllinks });
+        movieMap.set(downloadMsg.key.id, { selected, downloads: movie.downloads });
       }
 
       else if (movieMap.has(repliedId)) {
@@ -443,7 +438,7 @@ cmd({
         }
        
         await conn.sendMessage(from, {
-          document: { url: chosen.url },
+          document: { url: chosen.direct_link },
           mimetype: "video/mp4",
           fileName: `${selected.title} - ${chosen.quality}.mp4`,
           caption: `🎬 *${selected.title}*\n🎥 *${chosen.quality}*\n\n> Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`
