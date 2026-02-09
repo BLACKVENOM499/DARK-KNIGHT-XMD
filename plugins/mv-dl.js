@@ -399,7 +399,7 @@ cmd({
         const dlUrl = `https://sinhalasubdl.vercel.app/api/download?url=${encodeURIComponent(selected.link)}`;
         const dlRes = await axios.get(dlUrl);
         const dllink = dlRes.data.result;
-        dllink.downloads = dllink.downloads.filter(d => d.direct_link.includes("pixeldrain.com") || d.direct_link.includes("ddl.sinhalasub.net") );
+        dllink.downloads = dllink.downloads.filter(d => d.direct_link.includes("pixeldrain.com"));
         
        
         if (!dllink.downloads?.length) {
