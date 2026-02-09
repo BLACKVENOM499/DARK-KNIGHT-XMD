@@ -551,7 +551,7 @@ cmd({
 ┃★│ • fancy 
 ┃★│ • getnumber
 ┃★│ • githubstalk
-┃★│ • lirik
+┃★│ • lyrics
 ┃★│ • npm
 ┃★│ • news
 ┃★│ • news1
