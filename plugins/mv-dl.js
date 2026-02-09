@@ -392,41 +392,35 @@ cmd({
 
         await conn.sendMessage(from, { react: { text: "🎯", key: msg.key } });
 
-        const movieUrl = `https://visper-md-ap-is.vercel.app/movie/sinhalasub/info?q=${encodeURIComponent(selected.link)}`;
+        const movieUrl = `https://my-apis-site.vercel.app/movie/sinhalasub/movie?url=${encodeURIComponent(selected.link)}&apikey=charuka-key-666`;
         const movieRes = await axios.get(movieUrl);
         const movie = movieRes.data.result;
-
-        const dlUrl = `https://sinhalasubdl.vercel.app/api/download?url=${encodeURIComponent(selected.link)}`;
-        const dlRes = await axios.get(dlUrl);
-        const dllink = dlRes.data.result;
-        dllink.downloads = dllink.downloads.filter(d => d.direct_link.includes("pixeldrain.com"));
         
-       
-        if (!dllink.downloads?.length) {
+        if (!movie.dl_links?.length) {
           return conn.sendMessage(from, { text: "*No download links available.*" }, { quoted: msg });
         }
 
         let info =
           `🎬 *${movie.title}*\n\n` +
-          `⭐ *IMDb:* ${movie.rating}\n` +
-          `📅 *Released:* ${movie.date}\n` +
+          `⭐ *IMDb:* ${movie.imdb}\n` +
+          `📅 *Released:* ${movie.releaseDate}\n` +
           `🌍 *Country:* ${movie.country}\n` +
           `🕐 *Runtime:* ${movie.duration}\n` +
-          `✍️ *Author:* ${movie.author}\n` +
+          `✍️ *Author:* ${movie.director}\n` +
           `📝 *Description:*\n${movie.description}\n\n` +
           `🎥 *𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅 𝑳𝒊𝒏𝒌𝒔:* 📥\n\n`;
 
-        dllink.downloads.forEach((d, i) => {
+        movie.dl_links.Server2.forEach((d, i) => {
           info += `♦️ ${i + 1}. *${d.quality}* — ${d.size}\n`;
         });
         info += "\n🔢 *Reply with number to download.*";
 
         const downloadMsg = await conn.sendMessage(from, {
-          image: { url: movie.images?.[0] },
+          image: { url: movie.poster },
           caption: info
         }, { quoted: msg });
 
-        movieMap.set(downloadMsg.key.id, { selected, downloads: dllink.downloads });
+        movieMap.set(downloadMsg.key.id, { selected, downloads: movie.dl_links.Server2 });
       }
 
       else if (movieMap.has(repliedId)) {
@@ -439,12 +433,7 @@ cmd({
 
         await conn.sendMessage(from, { react: { text: "📥", key: msg.key } });
 
-        let directLink = chosen.direct_link;
-
-        if (directLink.includes("pixeldrain.com")) {
-          const match = directLink.match(/\/([A-Za-z0-9]+)$/);
-          if (match) directLink = `https://pixeldrain.com/api/file/${match[1]}`;
-        }
+        let directLink = chosen.url;
 
         const size = chosen.size.toLowerCase();
         const sizeGB = size.includes("gb") ? parseFloat(size) : parseFloat(size) / 1024;
@@ -454,7 +443,7 @@ cmd({
         }
        
         await conn.sendMessage(from, {
-          document: { url: directLink },
+          document: { url: url },
           mimetype: "video/mp4",
           fileName: `${selected.title} - ${chosen.quality}.mp4`,
           caption: `🎬 *${selected.title}*\n🎥 *${chosen.quality}*\n\n> Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`
