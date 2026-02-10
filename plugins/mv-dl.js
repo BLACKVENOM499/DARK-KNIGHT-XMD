@@ -396,9 +396,7 @@ cmd({
         const movieRes = await axios.get(movieUrl);
         const movie = movieRes.data.result;
        
-        if (!movie.dl_links.Server2?.length) {
-          return conn.sendMessage(from, { text: "*No download links available.*" }, { quoted: msg });
-        }
+        
 
         let info =
           `🎬 *${movie.title}*\n\n` +
