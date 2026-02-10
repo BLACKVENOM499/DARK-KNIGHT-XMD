@@ -5,6 +5,177 @@ const NodeCache = require("node-cache");
 
 const movieCache = new NodeCache({ stdTTL: 100, checkperiod: 120 });
  
+
+
+cmd({
+  pattern: "paka",
+  alias: ["ssubs"],
+  desc: "🎥 Search Sinhala Subbed Movies (Pixeldrain only)",
+  category: "media",
+  react: "🎬",
+  filename: __filename
+}, async (conn, mek, m, { from, q }) => {
+
+  if (!q) {
+    return conn.sendMessage(from, {
+      text: "❗ *Use:* .sinhalasubs <movie name>"
+    }, { quoted: mek });
+  }
+
+  try {
+    // 🔍 SEARCH MOVIES
+    const searchUrl = `https://visper-md-ap-is.vercel.app/movie/sinhalasub/search?q=${encodeURIComponent(q)}`;
+    const searchRes = await axios.get(searchUrl);
+
+    if (!searchRes.data.success || !searchRes.data.result.length) {
+      return conn.sendMessage(from, {
+        text: "*❌ No movies found.*"
+      }, { quoted: mek });
+    }
+
+    const movieList = searchRes.data.result.map((m, i) => ({
+      number: i + 1,
+      title: m.Title,
+      link: m.Link
+    }));
+
+    let listText = "🔢 *Reply with movie number*\n━━━━━━━━━━━━━━\n\n";
+    movieList.forEach(m => {
+      listText += `🎞️ ${m.number}. *${m.title}*\n`;
+    });
+
+    const listMsg = await conn.sendMessage(from, {
+      text:
+        `*🔍 SINHALASUB MOVIE SEARCH*\n\n${listText}\n\n> Powered by DARK-KNIGHT-XMD`
+    }, { quoted: mek });
+
+    const movieMap = new Map();
+
+    // 👂 LISTENER
+    const listener = async (update) => {
+      const msg = update.messages?.[0];
+      if (!msg?.message?.extendedTextMessage) return;
+
+      const reply = msg.message.extendedTextMessage;
+      const replyText = reply.text.trim();
+      const repliedId = reply.contextInfo?.stanzaId;
+
+      // ❌ Cancel
+      if (replyText.toLowerCase() === "done") {
+        conn.ev.off("messages.upsert", listener);
+        return conn.sendMessage(from, { text: "✅ *Cancelled.*" }, { quoted: msg });
+      }
+
+      // 🎯 MOVIE SELECT
+      if (repliedId === listMsg.key.id) {
+        const num = parseInt(replyText);
+        const selected = movieList.find(x => x.number === num);
+        if (!selected) {
+          return conn.sendMessage(from, {
+            text: "*❌ Invalid movie number.*"
+          }, { quoted: msg });
+        }
+
+        await conn.sendMessage(from, {
+          react: { text: "🎯", key: msg.key }
+        });
+
+        // 📥 MOVIE DETAILS
+        const infoUrl =
+          `https://sinhalasubdl.vercel.app/api/download?url=${encodeURIComponent(selected.link)}`;
+        const infoRes = await axios.get(infoUrl);
+        const movie = infoRes.data;
+
+        if (!movie.status) {
+          return conn.sendMessage(from, {
+            text: "*❌ Failed to fetch movie details.*"
+          }, { quoted: msg });
+        }
+
+        // 🎥 PIXELDRAIN ONLY
+        const pixeldrain = movie.result.downloads.filter(d =>
+          d.provider === "Pixeldrain" && d.direct_link
+        );
+
+        if (!pixeldrain.length) {
+          return conn.sendMessage(from, {
+            text: "*❌ Pixeldrain links not available.*"
+          }, { quoted: msg });
+        }
+
+        let info =
+          `🎬 *${movie.result.title}*\n\n` +
+          `📅 *Year:* ${movie.result.year}\n` +
+          `🕐 *Duration:* ${movie.result.duration}\n\n` +
+          `🎥 *Pixeldrain Downloads* 📥\n\n`;
+
+        pixeldrain.forEach((d, i) => {
+          info += `♦️ ${i + 1}. *${d.quality}* — ${d.size}\n`;
+        });
+
+        info += "\n🔢 *Reply with number to download.*";
+
+        const downloadMsg = await conn.sendMessage(from, {
+          image: { url: movie.result.poster },
+          caption: info
+        }, { quoted: msg });
+
+        movieMap.set(downloadMsg.key.id, {
+          title: movie.result.title,
+          downloads: pixeldrain
+        });
+      }
+
+      // 📦 DOWNLOAD SELECT
+      else if (movieMap.has(repliedId)) {
+        const { title, downloads } = movieMap.get(repliedId);
+        const num = parseInt(replyText);
+        const chosen = downloads[num - 1];
+
+        if (!chosen) {
+          return conn.sendMessage(from, {
+            text: "*❌ Invalid number.*"
+          }, { quoted: msg });
+        }
+
+        await conn.sendMessage(from, {
+          react: { text: "📥", key: msg.key }
+        });
+
+        // ⚠️ Size check (optional)
+        const sizeText = chosen.size.toLowerCase();
+        const sizeGB = sizeText.includes("gb")
+          ? parseFloat(sizeText)
+          : parseFloat(sizeText) / 1024;
+
+        if (sizeGB > 2) {
+          return conn.sendMessage(from, {
+            text: `⚠️ *Large File:* ${chosen.size}`
+          }, { quoted: msg });
+        }
+
+        // ⬇️ SEND FILE
+        await conn.sendMessage(from, {
+          document: { url: chosen.direct_link },
+          mimetype: "video/mp4",
+          fileName: `${title} - ${chosen.quality}.mp4`,
+          caption:
+            `🎬 *${title}*\n🎥 *${chosen.quality}*\n\n> Powered by DARK-KNIGHT-XMD`
+        }, { quoted: msg });
+      }
+    };
+
+    conn.ev.on("messages.upsert", listener);
+
+  } catch (err) {
+    console.error(err);
+    conn.sendMessage(from, {
+      text: `*Error:* ${err.message}`
+    }, { quoted: mek });
+  }
+});
+
+
 cmd({
   pattern: "movie",
   alias: ["mv", "film"],
