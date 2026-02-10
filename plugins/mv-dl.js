@@ -429,29 +429,27 @@ cmd({
           caption: info
         }, { quoted: msg });
 
-        movieMap.set(downloadMsg.key.id, {
-          title: movie.result.title,
-          downloads: pixeldrain
-        });
+        movieMap.set(downloadMsg.key.id, { title: movie.result.title, downloads: pixeldrain });
       }
-
-      // 📦 DOWNLOAD SELECT
+       
       else if (movieMap.has(repliedId)) {
         const { title, downloads } = movieMap.get(repliedId);
         const num = parseInt(replyText);
         const chosen = downloads[num - 1];
 
         if (!chosen) {
-          return conn.sendMessage(from, {
-            text: "*❌ Invalid number.*"
-          }, { quoted: msg });
+          return conn.sendMessage(from, { text: "*❌ Invalid number.*" }, { quoted: msg });
         }
 
-        await conn.sendMessage(from, {
-          react: { text: "📥", key: msg.key }
-        });
+        await conn.sendMessage(from, { react: { text: "📥", key: msg.key } });
 
-        // ⚠️ Size check (optional)
+        let directLink = chosen.direct_link;
+
+        if (directLink.includes("pixeldrain.com")) {
+          const match = directLink.match(/\/([A-Za-z0-9]+)$/);
+          if (match) directLink = `https://pixeldrain.com/api/file/${match[1]}`;
+        }
+        
         const sizeText = chosen.size.toLowerCase();
         const sizeGB = sizeText.includes("gb") ? parseFloat(sizeText) : parseFloat(sizeText) / 1024;
 
@@ -461,9 +459,8 @@ cmd({
           }, { quoted: msg });
         }
 
-        // ⬇️ SEND FILE
         await conn.sendMessage(from, {
-          document: { url: chosen.direct_link },
+          document: { url: directLink },
           mimetype: "video/mp4",
           fileName: `${title} - ${chosen.quality}.mp4`,
           caption: `🎬 *${title}*\n🎥 *${chosen.quality}*\n\n> Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`
