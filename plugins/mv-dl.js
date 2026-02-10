@@ -356,7 +356,8 @@ cmd({
     const movieList = data.result.map((m, i) => ({
       number: i + 1,
       title: m.Title,
-      link: m.Link
+      link: m.Link,
+      type: m.Type
     }));
 
     let textList = "🔢 𝑅𝑒𝑝𝑙𝑦 𝐵𝑒𝑙𝑜𝑤 𝑁𝑢𝑚𝑏𝑒𝑟\n━━━━━━━━━━━━━━━━━\n\n";
@@ -415,7 +416,8 @@ cmd({
         let info =
           `🎬 *${movie.result.title}*\n\n` +
           `📅 *Released* ${movie.result.year}\n` +
-          `🕐 *Duration:* ${movie.result.duration}\n\n` +
+          `🕐 *Runtime:* ${movie.result.duration}\n` +
+          `✍️ *Type:* ${selected.type}\n\n` +
           `🎥 *𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅 𝑳𝒊𝒏𝒌𝒔:* 📥 📥\n\n`;
 
         pixeldrain.forEach((d, i) => {
