@@ -115,64 +115,75 @@ cmd({
 
         await conn.sendMessage(from, { react: { text: "🎯", key: msg.key } });
 
-        const movieUrl = `https://vajira-official-apis.vercel.app/api/123mkvdetails?apikey=vajira-ukpu7tu897-1770118987096&url=${encodeURIComponent(selected.link)}`;
-        const movieRes = await axios.get(movieUrl);
-        const movie = movieRes.data;
-        
-        const defaultImage = "https://files.catbox.moe/ajfxoo.jpg";
-       
-        if (!movie.dllink) {
-          return conn.sendMessage(from, { text: "*No download links available.*" }, { quoted: msg });
-        }
+      const movieUrl = `https://vajira-official-apis.vercel.app/api/123mkvdetails?apikey=vajira-ukpu7tu897-1770118987096&url=${encodeURIComponent(selected.link)}`;
+      const movieRes = await axios.get(movieUrl);
+      const movie = movieRes.data;
 
-        let info =
-          `🎬 *${movie.title}*\n\n` +
-          `⭐ *Language:* ${movie.language}\n` +
-          `📅 *Released:* ${movie.date}\n` +
-          `🌍 *Country:* ${movie.country}\n` +
-          `🎭 *Category:* ${movie.genres}\n` +
-          `👷‍♂️ *Cast:* ${movie.actors}\n\n` +
-          `🎥 *𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅 𝑳𝒊𝒏𝒌𝒔:* 📥\n\n`;
+      const defaultImage = "https://files.catbox.moe/ajfxoo.jpg";
 
-        movie.dllink.forEach((d, i) => {
-          info += `♦️ ${i + 1}. *${d.quality}* — ${d.size}\n`;
-        });
-        info += "\n🔢 *Reply with number to download.*";
-
-        const downloadMsg = await conn.sendMessage(from, {
-          image: { url: defaultImage },
-          caption: info
-        }, { quoted: msg });
-
-        movieMap.set(downloadMsg.key.id, { selected, downloads: movie.dllink });
+      let downloads = [];
+      if (Array.isArray(movie.dllink)) {
+        downloads = movie.dllink;
+      } else if (typeof movie.dllink === "string") {
+        downloads = [{
+          dllink: movie.dllink,
+          size: movie.size || "N/A",
+          quality: movie.quality || "N/A"
+        }];
       }
 
-      else if (movieMap.has(repliedId)) {
-        const { selected, downloads } = movieMap.get(repliedId);
-        const num = parseInt(replyText);
-        const chosen = downloads[num - 1];
-        if (!chosen) {
-          return conn.sendMessage(from, { text: "*Invalid link number.*" }, { quoted: msg });
-        }
-
-        await conn.sendMessage(from, { react: { text: "📥", key: msg.key } });
-
-        const size = chosen.size.toLowerCase();
-        const sizeGB = size.includes("gb") ? parseFloat(size) : parseFloat(size) / 1024;
-
-        if (sizeGB > 2) {
-          return conn.sendMessage(from, { text: `⚠️ *Large File (${chosen.size})*` }, { quoted: msg });
-        }
-
-        await conn.sendMessage(from, {
-          document: { url: chosen.dllink },
-          mimetype: "video/mp4",
-          fileName: `${selected.title} - ${chosen.quality}.mp4`,
-          caption: `🎬 *${selected.title}*\n🎥 *${chosen.quality}*\n\n> Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`
-        }, { quoted: msg });
+      if (!downloads.length) {
+        return conn.sendMessage(from, { text: "*No download links available.*" }, { quoted: msg });
       }
-    };
 
+      let info =
+        `🎬 *${movie.title}*\n\n` +
+        `⭐ *Language:* ${movie.language}\n` +
+        `📅 *Released:* ${movie.date}\n` +
+        `🌍 *Country:* ${movie.country}\n` +
+        `🎭 *Category:* ${movie.genres}\n` +
+        `👷‍♂️ *Cast:* ${movie.actors}\n\n` +
+        `🎥 *𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅 𝑳𝒊𝒏𝒌𝒔:* 📥\n\n`;
+
+      downloads.forEach((d, i) => {
+        info += `♦️ ${i + 1}. *${d.quality}* — ${d.size}\n`;
+      });
+      info += "\n🔢 *Reply with number to download.*";
+
+      const downloadMsg = await conn.sendMessage(from, {
+        image: { url: defaultImage },
+        caption: info
+      }, { quoted: msg });
+
+      movieMap.set(downloadMsg.key.id, { selected, downloads });
+    }
+
+    else if (movieMap.has(repliedId)) {
+      const { selected, downloads } = movieMap.get(repliedId);
+      const num = parseInt(replyText);
+      const chosen = downloads[num - 1];
+      if (!chosen) {
+        return conn.sendMessage(from, { text: "*Invalid link number.*" }, { quoted: msg });
+      }
+
+      await conn.sendMessage(from, { react: { text: "📥", key: msg.key } });
+
+      const size = chosen.size.toLowerCase();
+      const sizeGB = size.includes("gb") ? parseFloat(size) : parseFloat(size) / 1024;
+
+      if (sizeGB > 2) {
+        return conn.sendMessage(from, { text: `⚠️ *Large File (${chosen.size})*` }, { quoted: msg });
+      }
+
+      await conn.sendMessage(from, {
+        document: { url: chosen.dllink },
+        mimetype: "video/mp4",
+        fileName: `${selected.title} - ${chosen.quality}.mp4`,
+        caption: `🎬 *${selected.title}*\n🎥 *${chosen.quality}*\n\n> Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`
+      }, { quoted: msg });
+    }
+  };
+   
     conn.ev.on("messages.upsert", listener);
 
   } catch (err) {
