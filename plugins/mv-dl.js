@@ -130,8 +130,8 @@ cmd({
           `⭐ *Language:* ${movie.language}\n` +
           `📅 *Released:* ${movie.date}\n` +
           `🌍 *Country:* ${movie.country}\n` +
-          `🎭 *Category:* ${movie.genres?.join(", ")}\n` +
-          `👷‍♂️ *Cast:* ${movie.actors.join(", ")}\n\n` +
+          `🎭 *Category:* ${movie.genres}\n` +
+          `👷‍♂️ *Cast:* ${movie.actors}\n\n` +
           `🎥 *𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅 𝑳𝒊𝒏𝒌𝒔:* 📥\n\n`;
 
         movie.dllink.forEach((d, i) => {
