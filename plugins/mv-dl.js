@@ -121,20 +121,20 @@ cmd({
         
         const defaultImage = "https://files.catbox.moe/ajfxoo.jpg";
        
-        if (!data.dllink?.length) {
+        if (!movie.dllink?.length) {
           return conn.sendMessage(from, { text: "*No download links available.*" }, { quoted: msg });
         }
 
         let info =
-          `🎬 *${data.title}*\n\n` +
+          `🎬 *${movie.title}*\n\n` +
           `⭐ *Language:* ${movie.language}\n` +
-          `📅 *Released:* ${data.date}\n` +
-          `🌍 *Country:* ${data.country}\n` +
-          `🎭 *Category:* ${data.genres?.join(", ")}\n` +
-          `👷‍♂️ *Cast:* ${data.actors.join(", ")}\n\n` +
+          `📅 *Released:* ${movie.date}\n` +
+          `🌍 *Country:* ${movie.country}\n` +
+          `🎭 *Category:* ${movie.genres?.join(", ")}\n` +
+          `👷‍♂️ *Cast:* ${movie.actors.join(", ")}\n\n` +
           `🎥 *𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅 𝑳𝒊𝒏𝒌𝒔:* 📥\n\n`;
 
-        data.dllink.forEach((d, i) => {
+        movie.dllink.forEach((d, i) => {
           info += `♦️ ${i + 1}. *${d.quality}* — ${d.size}\n`;
         });
         info += "\n🔢 *Reply with number to download.*";
@@ -144,7 +144,7 @@ cmd({
           caption: info
         }, { quoted: msg });
 
-        movieMap.set(downloadMsg.key.id, { selected, downloads: data.dllink });
+        movieMap.set(downloadMsg.key.id, { selected, downloads: movie.dllink });
       }
 
       else if (movieMap.has(repliedId)) {
