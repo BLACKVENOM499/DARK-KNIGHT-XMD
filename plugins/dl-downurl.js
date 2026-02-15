@@ -1,45 +1,53 @@
-const { cmd, commands } = require('../command');
+const {cmd , commands} = require('../command');
 const axios = require("axios");
 const path = require("path");
 
 cmd({
     pattern: "download",
-    alias: ["downurl2"],
+    alias: ["downurl" ,"down"],
     use: ".download <link>",
     react: "📁",
     desc: "Download file from direct link",
     category: "search",
     filename: __filename
 },
-async (conn, mek, m, { from, q, reply }) => {
+async (conn, mek, m, {
+    from,
+    q,
+    reply
+}) => {
     try {
-        // Check link
-        if (!q) return reply("❗ කරුණාකර download link එකක් ලබා දෙන්න.");
+        if (!q) {
+            return reply("❗ කරුණාකර download link එකක් ලබා දෙන්න.");
+        }
 
         const link = q.trim();
         const urlPattern = /^(https?:\/\/[^\s]+)/i;
-        if (!urlPattern.test(link)) return reply("❗ දීලා තියෙන URL එක වැරදි.\nකරුණාකර හරි link එකක් දෙන්න.");
+        if (!urlPattern.test(link)) {
+            return reply("❗ දීලා තියෙන URL එක වැරදි.\nකරුණාකර හරි link එකක් දෙන්න.");
+        }
 
-        // Check link availability & get headers
-        const head = await axios.head(link).catch(() => {
-            throw "❌ Link එක open කරන්න බැහැ.";
-        });
+        // URL එකේ Headers ලබාගෙන File info සොයා ගැනීම
+        const response = await axios.head(link);
+        const headers = response.headers;
 
-        // Get MIME type from headers
-        const mimeType = head.headers['content-type'] || "application/octet-stream";
+        // Mimetype එක ලබා ගැනීම (නැතිනම් default එකක් දැමීම)
+        const mimeType = headers['content-type'] || 'application/octet-stream';
 
-        // Get file name from headers or URL
-        let fileName = "file";
-        if (head.headers['content-disposition']) {
-            const match = head.headers['content-disposition'].match(/filename="?([^"]+)"?/);
-            if (match && match[1]) fileName = match[1];
+        // Filename එක සොයා ගැනීම (Content-Disposition හරහා හෝ URL එක අගින්)
+        let fileName = "Downloaded_File";
+        const contentDisposition = headers['content-disposition'];
+        
+        if (contentDisposition && contentDisposition.includes('filename=')) {
+            fileName = contentDisposition.split('filename=')[1].replaceAll('"', '').trim();
         } else {
+            // URL එකෙන් file name එක වෙන් කර ගැනීම
             fileName = path.basename(new URL(link).pathname) || "file";
         }
 
         const caption = `*Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳*`;
 
-        // Send file
+        // File එක යැවීම
         await conn.sendMessage(from, {
             document: { url: link },
             mimetype: mimeType,
@@ -49,7 +57,7 @@ async (conn, mek, m, { from, q, reply }) => {
 
     } catch (err) {
         console.error(err);
-        reply("❌ Download failed!\n\n" + err);
+        reply("❌ Download failed!\n\n" + (err.message || err));
     }
 });
 
