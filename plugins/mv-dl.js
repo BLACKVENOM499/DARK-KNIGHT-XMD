@@ -121,7 +121,7 @@ cmd({
         
         const defaultImage = "https://files.catbox.moe/ajfxoo.jpg";
        
-        if (!movie.dllink?.length) {
+        if (!movie.dllink) {
           return conn.sendMessage(from, { text: "*No download links available.*" }, { quoted: msg });
         }
 
