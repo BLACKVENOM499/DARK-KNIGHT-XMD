@@ -690,8 +690,12 @@ cmd({
         const infoRes = await axios.get(infoUrl);
         const movieData = infoRes.data.data;
         const movie = movieData.movieInfo;
-        const downloads = movieData.downloadLinks || [];
+        const downloads = (movieData.downloadLinks || []).filter(d => d.directLinkUrl && d.directLinkUrl.toLowerCase().includes("drive2.baiscopeslk.workers.dev") );
 
+        if (downloads.length === 0) {
+          return conn.sendMessage(from, { text: "*No download links available.*" }, { quoted: msg });
+        }
+       
         let caption = 
           `🎬 *${movie.title}*\n\n` +
           `⭐ *IMDB:* ${movie.ratingValue}\n` +
