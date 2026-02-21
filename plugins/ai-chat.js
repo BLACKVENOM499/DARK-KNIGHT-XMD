@@ -12,15 +12,15 @@ async (conn, mek, m, { from, args, q, reply, react }) => {
     try {
         if (!q) return reply("Please provide a message for the AI.\nExample: `.ai Hello`");
 
-        const apiUrl = `https://lance-frank-asta.onrender.com/api/gpt?q=${encodeURIComponent(q)}`;
+        const apiUrl = `https://apis.sandarux.sbs/api/ai/chatopenai?apikey=darknero&text=${encodeURIComponent(q)}`;
         const { data } = await axios.get(apiUrl);
 
-        if (!data || !data.message) {
+        if (!data || !data.answer) {
             await react("❌");
             return reply("AI failed to respond. Please try again later.");
         }
 
-        await reply(`🤖 *AI Response:*\n\n${data.message}`);
+        await reply(`🤖 *AI Response:*\n\n${data.answer}`);
         await react("✅");
     } catch (e) {
         console.error("Error in AI command:", e);
@@ -86,33 +86,44 @@ async (conn, mek, m, { from, args, q, reply, react }) => {
 });
 
 cmd({
-    pattern: "gpt",
-    desc: "Chat with Gpt AI",
+    pattern: "venice",
+    desc: "Chat with Microsoft Copilot - GPT-5",
     category: "ai",
-    react: "🧠",
+    react: "🤖",
     filename: __filename
 },
 async (conn, mek, m, { from, args, q, reply, react }) => {
     try {
-        if (!q) return reply("Please provide a message for Gpt AI.\nExample: `.gpt Hello`");
-
-        const apiUrl = `https://api-aswin-sparky.koyeb.app/api/search/gpt3?search=${encodeURIComponent(q)}`;
-        const { data } = await axios.get(apiUrl);
-
-        if (!data || !data.data) {
-            await react("❌");
-            return reply("Gpt AI failed to respond. Please try again later.");
+        if (!q) {
+            return reply("🧠 Please provide a message for the AI.\nExample: `.venice Hello`");
         }
 
-        await reply(`🧠 *Gpt AI Response:*\n\n${data.data}`);
+        // ✅ Malvin API - GPT-5 Endpoint
+        const apiUrl = `https://malvin-api.vercel.app/ai/venice?text=${encodeURIComponent(q)}`;
+
+        const { data } = await axios.get(apiUrl);
+
+        // 🧾 Validate Response
+        if (!data?.status || !data?.result) {
+            await react("❌");
+            return reply("AI failed to respond. Please try again later.");
+        }
+
+        // 🧩 Nicely formatted response
+        const responseMsg = `
+Venice AI - Dolphin 3.0 Mistral 24B  
+━━━━━━━━━━━━━━━  
+${data.result}
+        `.trim();
+
+        await reply(responseMsg);
         await react("✅");
     } catch (e) {
-        console.error("Error in Gpt AI command:", e);
+        console.error("Error in AI command:", e);
         await react("❌");
-        reply("An error occurred while communicating with Gpt AI.");
+        reply("An error occurred while communicating with the AI.");
     }
 });
-
 
 cmd({
     pattern: "copilot",
@@ -152,7 +163,6 @@ ${data.result}
         reply("An error occurred while communicating with the AI.");
     }
 });
-
 
 cmd({
     pattern: "copilot2",
@@ -194,9 +204,8 @@ ${data.result}
     }
 });
 
-
 cmd({
-    pattern: "gpt2",
+    pattern: "gpt",
     desc: "Chat with Microsoft Copilot - GPT-5",
     category: "ai",
     react: "🤖",
@@ -205,7 +214,7 @@ cmd({
 async (conn, mek, m, { from, args, q, reply, react }) => {
     try {
         if (!q) {
-            return reply("🧠 Please provide a message for the AI.\nExample: `.gpt2 Hello`");
+            return reply("🧠 Please provide a message for the AI.\nExample: `.gpt Hello`");
         }
 
         // ✅ Malvin API - GPT-5 Endpoint

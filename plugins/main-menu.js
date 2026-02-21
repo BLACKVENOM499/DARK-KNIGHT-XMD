@@ -120,13 +120,11 @@ cmd({
 ┃★╭──────────────
 ┃★│ • ai
 ┃★│ • gpt
-┃★│ • gpt2
+┃★│ • venice
 ┃★│ • copilot
 ┃★│ • copilot2
 ┃★│ • openai
 ┃★│ • openai2
-┃★│ • gemini
-┃★│ • gemini2
 ┃★│ • aiimg
 ┃★│ • aiimg1
 ┃★│ • aiimg2
@@ -553,7 +551,7 @@ cmd({
 ┃★│ • fancy 
 ┃★│ • getnumber
 ┃★│ • githubstalk
-┃★│ • lirik
+┃★│ • lyrics
 ┃★│ • npm
 ┃★│ • news
 ┃★│ • news1
