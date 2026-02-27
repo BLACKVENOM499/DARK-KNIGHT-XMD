@@ -1141,3 +1141,144 @@ cmd({
     await conn.sendMessage(from, { text: `*Error:* ${err.message}` }, { quoted: mek });
   }
 });
+
+cmd({
+  pattern: "subzlk",
+  alias: ["subz"],
+  desc: "🎥 Search Sinhala subded movies from CineSubz",
+  category: "media",
+  react: "🎬",
+  filename: __filename
+}, async (conn, mek, m, { from, q }) => {
+
+  if (!q) {
+    return await conn.sendMessage(from, {
+      text: "Use: .subzlk <movie name>"
+    }, { quoted: mek });
+  }
+
+  try {
+    const cacheKey = `subzlk_${q.toLowerCase()}`;
+    let data = movieCache.get(cacheKey);
+
+    if (!data) {
+      const url = `https://movie-apis-omega.vercel.app/movie/subzlk/search?text=${encodeURIComponent(q)}&apikey=dark-key-2008`;
+      const res = await axios.get(url);
+      data = res.data;
+
+      if (!data.status || !data.result?.length) {
+        throw new Error("No results found for your query.");
+      }
+
+      movieCache.set(cacheKey, data);
+    }
+
+    const movieList = data.result.map((m, i) => ({
+      number: i + 1,
+      title: m.title,
+      link: m.url
+    }));
+
+    let textList = "🔢 𝑅𝑒𝑝𝑙𝑦 𝐵𝑒𝑙𝑜𝑤 𝑁𝑢𝑚𝑏𝑒𝑟\n━━━━━━━━━━━━━━━\n\n";
+    movieList.forEach((m) => {
+      textList += `🔸 *${m.number}. ${m.title}*\n`;
+    });
+    textList += "\n💬 *Reply with movie number to view details.*";
+
+    const sentMsg = await conn.sendMessage(from, {
+      text: `*🔍 𝐒𝐔𝐁𝐙𝐋𝐊 𝑪𝑰𝑵𝑬𝑴𝑨 𝑺𝑬𝑨𝑹𝑪𝑯 🎥*\n\n${textList}\n\n> > Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`
+    }, { quoted: mek });
+
+    const movieMap = new Map();
+
+    const listener = async (update) => {
+      const msg = update.messages?.[0];
+      if (!msg?.message?.extendedTextMessage) return;
+
+      const replyText = msg.message.extendedTextMessage.text.trim();
+      const repliedId = msg.message.extendedTextMessage.contextInfo?.stanzaId;
+
+      if (replyText.toLowerCase() === "done") {
+        conn.ev.off("messages.upsert", listener);
+        return conn.sendMessage(from, { text: "✅ *Cancelled*" }, { quoted: msg });
+      }
+
+      if (repliedId === sentMsg.key.id) {
+        const num = parseInt(replyText);
+        const selected = movieList.find(m => m.number === num);
+        if (!selected) {
+          return conn.sendMessage(from, { text: "*Invalid movie number.*" }, { quoted: msg });
+        }
+
+        await conn.sendMessage(from, { react: { text: "🎯", key: msg.key } });
+
+        const movieUrl = `https://movie-apis-omega.vercel.app/movie/subzlk/movie?url=${encodeURIComponent(selected.link)}&apikey=dark-key-2008`;
+        const movieRes = await axios.get(movieUrl);
+        const movie = movieRes.data.result;
+
+        if (!movie.dl_links?.length) {
+          return conn.sendMessage(from, { text: "*No download links available.*"}, { quoted: msg });
+        }
+
+        let info =
+          `🎬 *${movie.title}*\n\n` +
+          `⭐ *IMDb:* ${movie.imdb}\n` +
+          `📅 *Released:* ${movie.year}\n` +
+          `🌍 *Country:* ${movie.country}\n` +
+          `🕐 *Runtime:* ${movie.duration}\n` +
+          `🎭 *Category:* ${movie.genres.join(", ")}\n\n` +
+          `🎥 *𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅 𝑳𝒊𝒏𝒌𝒔:* 📥\n\n`;
+
+        movie.dl_links.forEach((d, i) => {
+          info += `♦️ ${i + 1}. *${d.quality}* — ${d.size}\n`;
+        });
+        info += "\n🔢 *Reply with number to download.*";
+
+        const downloadMsg = await conn.sendMessage(from, {
+          image: { url: movie.poster },
+          caption: info
+        }, { quoted: msg });
+
+        movieMap.set(downloadMsg.key.id, { selected, downloads: movie.dl_links });
+      }
+
+      else if (movieMap.has(repliedId)) {
+        const { selected, downloads } = movieMap.get(repliedId);
+        const num = parseInt(replyText);
+        const chosen = downloads[num - 1];
+        if (!chosen) {
+          return conn.sendMessage(from, { text: "*Invalid quality number.*" }, { quoted: msg });
+        }
+
+        await conn.sendMessage(from, { react: { text: "📥", key: msg.key } });
+
+        const size = chosen.size.toLowerCase();
+        const sizeGB = size.includes("gb") ? parseFloat(size) : parseFloat(size) / 1024;
+
+        if (sizeGB > 2) {
+          return conn.sendMessage(from, { text: `⚠️ *Large File (${chosen.size})*` }, { quoted: msg });
+        }
+        
+        const apiUrl = `https://movie-apis-omega.vercel.app/movie/gdrive/download?url=${encodeURIComponent(chosen.dllink)}&apikey=dark-key-2008`;
+        const apiRes = await axios.get(apiUrl);
+        const direct = apiRes.data.result.finalLink;
+
+        if (!direct) {
+            return conn.sendMessage(from, { text: "*download link not found.*" }, { quoted: msg });
+        }
+        
+        await conn.sendMessage(from, {
+          document: { url: direct },
+          mimetype: "video/mp4",
+          fileName: `${selected.title} - ${chosen.quality}.mp4`,
+          caption: `🎬 *${selected.title}*\n🎥 *${chosen.quality}*\n\n> Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`
+        }, { quoted: msg });
+      }
+    };
+
+    conn.ev.on("messages.upsert", listener);
+
+  } catch (err) {
+    await conn.sendMessage(from, { text: `*Error:* ${err.message}` }, { quoted: mek }); 
+  }
+});
