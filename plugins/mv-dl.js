@@ -962,7 +962,7 @@ cmd({
         info += "\n🔢 *Reply with number to download.*";
 
         const downloadMsg = await conn.sendMessage(from, {
-          image: { url: movie.mainImage },
+          image: { url: movie.poster },
           caption: info
         }, { quoted: msg });
 
