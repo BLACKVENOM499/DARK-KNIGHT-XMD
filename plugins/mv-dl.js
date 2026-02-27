@@ -939,9 +939,9 @@ cmd({
         const dlRes = await axios.get(dlUrl);
         const movie = dlRes.data.result;
         const dllink = dlRes.data.result;
-        dllink.dl_links = dllink.dl_links.filter(d => d.url.includes("pixeldrain.com"));
+        const pixeldrainLinks = dllink.dl_links.pixeldrain || [];
         
-        if (!dllink.dl_links?.length) {
+        if (!pixeldrainLinks.length) {
           return conn.sendMessage(from, { text: "*No download links available.*" }, { quoted: msg });
         }
 
@@ -956,7 +956,7 @@ cmd({
           `👷‍♂️ *Cast:* ${movie.cast?.slice(0, 20).join(", ")}\n\n` +
           `🎥 *𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅 𝑳𝒊𝒏𝒌𝒔:* 📥\n\n`;
 
-        dllink.dl_links.forEach((d, i) => {
+        pixeldrainLinks.forEach((d, i) => {
           info += `♦️ ${i + 1}. *${d.quality}* — ${d.size}\n`;
         });
         info += "\n🔢 *Reply with number to download.*";
@@ -966,7 +966,7 @@ cmd({
           caption: info
         }, { quoted: msg });
 
-        movieMap.set(downloadMsg.key.id, { selected, downloads: dllink.dl_links });
+        movieMap.set(downloadMsg.key.id, { selected, downloads: pixeldrainLinks });
       }
 
       else if (movieMap.has(repliedId)) {
