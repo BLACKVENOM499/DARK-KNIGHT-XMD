@@ -26,7 +26,7 @@ function waitForReply(conn, from, sender, targetId) {
 
 cmd({
     pattern: "movie",
-    alias: ["movie5"],
+    alias: ["mv"],
     desc: "Ultimate Multi-reply movie engine with fixed UI",
     category: "downloader",
     react: "🎬",
@@ -35,23 +35,28 @@ cmd({
     try {
         if (!q) return reply("❗ කරුණාකර සෙවිය යුතු ෆිල්ම් එකේ නම ලබා දෙන්න.");
 
-        const posterUrl = "https://files.catbox.moe/d0v6fe.png";
+        const posterUrl = "https://files.catbox.moe/ajfxoo.jpg";
 
         // --- Premium UI Design ---
-        let menu = `🎬 *𝐒𝐀𝐘𝐔𝐑𝐀 𝐌𝐃 𝐌𝐎𝐕𝐈𝐄 𝐄𝐍𝐆𝐈𝐍𝐄* 🎬
-   *🔍 සෙවුම:* _${q.toUpperCase()}_
-  *Select your movie source below:*
- ┌──────────────┈⊷
-  │  𝟎𝟏 ┋ *Sinhalasub*
-  │  𝟎𝟐 ┋ *Cinesubz*
-  │  𝟎𝟑 ┋ *Dinka Sinhalasub*
-  │  𝟎𝟒 ┋ *SL Anime Club*
-  │  𝟎𝟓 ┋ *Pirate.lk*
-  │  𝟎𝟔 ┋ *Moviesublk*
-  └──────────────┈⊷ 
-   *අංකය Reply කරන්න.*
-  _(MOVIE LK🔥)_
-         *ᴘᴏᴡᴇʀᴇᴅ ʙʏ *`;
+        let menu = `
+ 🎬 𝐀𝐋𝐋 𝐂𝐈𝐍𝐄𝐌𝐀 𝐒𝐄𝐀𝐑𝐂𝐇 🎬
+ ━━━━━━━━━━━━━━━━
+ 
+ 🔍 𝐘𝐎𝐔𝐑 𝐒𝐄𝐀𝐑𝐂𝐇 : ${q.toUpperCase()}
+  
+ 🔢 𝑹𝒆𝒑𝒍𝒚 𝑩𝒆𝒍𝒐𝒘 𝑵𝒖𝒎𝒃𝒆𝒓
+
+ 1️⃣ 𝑺𝑰𝑵𝑯𝑨𝑳𝑨𝑺𝑼𝑩 𝑆𝐸𝐴𝐑𝐶𝐻
+ 2️⃣ 𝑺𝑰𝑵𝑯𝑨𝑳𝑨𝑺𝑼𝑩𝑺 𝑆𝐸𝐴𝐑𝐶𝐻    
+ 3️⃣ 𝑪𝑰𝑵𝑬𝑺𝑼𝑩𝒁 𝑆𝐸𝐴𝐑𝐶𝐻 
+ 4️⃣ 𝑩𝑨𝑰𝑺𝑬𝑪𝑶𝑷𝑬 𝑆𝐸𝐴𝐑𝐶𝐻 
+ 5️⃣ 𝑷𝑰𝑹𝑨𝑻𝑬 𝑆𝐸𝐴𝐑𝐶𝐻
+ 6️⃣ 𝑺𝑼𝑩𝑳𝑲 𝑆𝐸𝐴𝐑𝐶𝐻  
+ 7️⃣ 𝑺𝑼𝑩𝒁𝑳𝑲 𝑆𝐸𝐴𝐑𝐶𝐻  
+ 8️⃣ 123𝐌𝐊𝐕 𝑆𝐸𝐴𝐑𝐶𝐻
+ 9️⃣ 𝐏𝐔𝐏𝐈𝐋𝐕𝐈𝐃𝐄𝐎 𝑆𝐸𝐴𝐑𝐶𝐻
+ 
+ > Powered by 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳`;
 
         // Image එකක් ලෙස යැවීමෙන් පින්තූරය නොපෙනී යාමේ ගැටලුව ස්ථිරවම විසඳේ.
         const listMsg = await conn.sendMessage(from, { 
@@ -62,20 +67,23 @@ cmd({
         // --- Multi-Reply Flow Control ---
         const startFlow = async () => {
             while (true) {
-                const selection = await waitForReply(conn, from, sender, listMsg.key.id);
-                if (!selection) break;
+            const selection = await waitForReply(conn, from, sender, listMsg.key.id);
+              if (!selection) break;
 
                 (async () => {
                     let targetPattern = "";
                     const selText = selection.text;
 
                     if (selText === '1') targetPattern = "sinhalasub";
-                    else if (selText === '2') targetPattern = "cinesubz";
-                    else if (selText === '3') targetPattern = "sub";
-                    else if (selText === '4') targetPattern = "bais";
+                    else if (selText === '2') targetPattern = "sinhalasubs";
+                    else if (selText === '3') targetPattern = "cinesubz";
+                    else if (selText === '4') targetPattern = "baiscope";
                     else if (selText === '5') targetPattern = "pirate";
-                    else if (selText === '6') targetPattern = "ssub";
-
+                    else if (selText === '6') targetPattern = "sublk";
+                    else if (selText === '7') targetPattern = "subzlk";
+                    else if (selText === '8') targetPattern = "mkv";
+                    else if (selText === '9') targetPattern = "pupil";
+                    
                     if (targetPattern) {
                         await conn.sendMessage(from, { react: { text: "🔍", key: selection.msg.key } });
                         
