@@ -889,17 +889,17 @@ cmd({
       const res = await axios.get(url);
       data = res.data;
 
-      if (!data.success || !data.data?.all?.length) {
+      if (!data.status || !data.result?.length) {
         throw new Error("No results found for your query.");
       }
 
       movieCache.set(cacheKey, data);
     }
     
-    const movieList = data.data.all.map((m, i) => ({
+    const movieList = data.result.map((m, i) => ({
       number: i + 1,
       title: m.title,
-      link: m.link
+      url: m.link
     }));
 
     let textList = "🔢 𝑅𝑒𝑝𝑙𝑦 𝐵𝑒𝑙𝑜𝑤 𝑁𝑢𝑚𝑏𝑒𝑟\n━━━━━━━━━━━━━━━━━\n\n";
@@ -935,7 +935,7 @@ cmd({
 
         await conn.sendMessage(from, { react: { text: "🎯", key: msg.key } });
 
-        const dlUrl = `https://movie-apis-omega.vercel.app/movie/sub/movie?url=${encodeURIComponent(selected.link)}&apikey=dark-key-2008`;
+        const dlUrl = `https://movie-apis-omega.vercel.app/movie/sub/movie?url=${encodeURIComponent(selected.url)}&apikey=dark-key-2008`;
         const dlRes = await axios.get(dlUrl);
         const movie = dlRes.data.result;
         const dllink = dlRes.data.result;
