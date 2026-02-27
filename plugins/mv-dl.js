@@ -939,7 +939,7 @@ cmd({
         const dlRes = await axios.get(dlUrl);
         const movie = dlRes.data.result;
         const dllink = dlRes.data.result;
-        dllink.dl_links = dllink.dl_links.filter(d => d.final_link.includes("pixeldrain.com"));
+        dllink.dl_links = dllink.dl_links.filter(d => d.url.includes("pixeldrain.com"));
         
         if (!dllink.dl_links?.length) {
           return conn.sendMessage(from, { text: "*No download links available.*" }, { quoted: msg });
