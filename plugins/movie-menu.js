@@ -81,8 +81,8 @@ cmd({
                     else if (selText === '5') targetPattern = "pirate";
                     else if (selText === '6') targetPattern = "sublk";
                     else if (selText === '7') targetPattern = "subzlk";
-                    else if (selText === '8') targetPattern = "mkv";
-                    else if (selText === '9') targetPattern = "pupil";
+                    else if (selText === '8') targetPattern = "123mkv";
+                    else if (selText === '9') targetPattern = "pupilvideo";
                     
                     if (targetPattern) {
                         await conn.sendMessage(from, { react: { text: "🔍", key: selection.msg.key } });
