@@ -230,8 +230,8 @@ cmd({
       }
 
       let info =
-        `🎬 *${movie.title}*\n` +
-        `💬 *Tagline:* ${movie.tagline}\n\n` +
+        `🎬 *${movie.title}*\n\n` +
+        `💬 *Tagline:* ${movie.tagline}\n` +
         `📅 *Released:* ${movie.date}\n` +
         `⏳ *Duration:* ${movie.duration}\n` +
         `🌍 *Country:* ${movie.country}\n` +
