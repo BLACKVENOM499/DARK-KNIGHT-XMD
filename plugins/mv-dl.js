@@ -234,7 +234,7 @@ cmd({
       `📅 *Released:* ${movie.release_date}\n` +
       `🎭 *Genre:* ${movie.genre}\n` +
       `👤 *Starring:* ${movie.starring}\n` +
-      `🎬 *Director:* ${movie.director}\n\n` +
+      `🕵️ *Director:* ${movie.director}\n` +
       `📝 *Description:* ${movie.description}\n\n` +
       `🎥 *𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅 𝑳𝒊𝒏𝒌𝒔:* 📥\n\n`;
 
