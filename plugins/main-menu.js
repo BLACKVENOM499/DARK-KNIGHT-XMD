@@ -23,13 +23,13 @@ cmd({
         platformName = "Heroku";
     } else if (process.env.KOYEB_APP_NAME || nameLength === 8) {
         platformName = "Koyeb";
-    } else if (process.env.RAILWAY_STATIC_URL || nameLength === 20) {
+    } else if (process.env.RAILWAY_STATIC_URL || nameLength === 12) {
         platformName = "Railway";
     } else if (process.env.RENDER_SERVICE_NAME || nameLength === 15) {
         platformName = "Render";
     } else if (process.env.PTERODACTYL || nameLength === 10) {
         platformName = "Panel";
-    } else if (nameLength === 12) {
+    } else if (process.env.REPL_ID || nameLength === 12) {
         platformName = "Replit";
     } else if (process.env.SSH_TTY || nameLength === 6) {
         platformName = "VPS";
@@ -41,13 +41,12 @@ cmd({
 ╭━〔 *𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳* 〕━··๏
 ┃★╭──────────────
 ┃★│ 👑 Owner : *${config.OWNER_NAME}*
-┃★│ ⌛ Uptime: *${runtime(process.uptime())}*
-┃★│ 💾 *RAM:* ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB / ${(os.totalmem() / 1024 / 1024).toFixed(2)}MB
-┃★│ 🚀 Platform : *${platformName}*
 ┃★│ ⚙️ Mode : *[${config.MODE}]*
 ┃★│ 🔣 Prefix : *[${config.PREFIX}]*
+┃★│ 🚀 Platform : *${platformName}*
 ┃★│ 🏷️ Version : *2.0.0 Bᴇᴛᴀ*
 ┃★│ 📚 Commands : *${totalCommands}*
+┃★│ ⏱️ Uptime: *${runtime(process.uptime())}*
 ┃★╰──────────────
 ╰━━━━━━━━━━━━━━┈⊷
 ╭━━〔 *📜 MENU LIST* 〕━━┈⊷
