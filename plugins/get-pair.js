@@ -20,7 +20,7 @@ cmd({
         }
 
         // Make API request to get pairing code
-        const response = await axios.get(`https://dark-knight-xmd-pair-rlu4.onrender.com/pair/code?number=${encodeURIComponent(phoneNumber)}`);
+        const response = await axios.get(`https://dark-knight-xmd-pair-production.up.railway.app/pair/code?number=${encodeURIComponent(phoneNumber)}`);
 
         if (!response.data || !response.data.code) {
             return await reply("❌ Failed to retrieve pairing code. Please try again later.");
