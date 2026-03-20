@@ -2,8 +2,8 @@ const axios = require("axios");
 const { cmd } = require("../command");
 
 cmd({
-  pattern: "mediafire",
-  alias: ["mfire"],
+  pattern: "mediafire2",
+  alias: ["mfire2"],
   react: '📂',
   desc: "Download files from MediaFire using Sadiya-Tech API.",
   category: "download",
@@ -69,8 +69,8 @@ cmd({
 
 
 cmd({
-  pattern: "mediafire2",
-  alias: ["mfire2"],
+  pattern: "mediafire",
+  alias: ["mfire"],
   desc: "To download MediaFire files.",
   react: "📂",
   category: "download",
