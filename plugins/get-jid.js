@@ -8,12 +8,12 @@ cmd({
     category: "utility",
     filename: __filename,
 }, async (conn, mek, m, { 
-    from, isGroup, isCreator, reply, sender 
+    from, isGroup, reply, sender 
 }) => {
     try {
-        if (!isCreator) {
+        /*if (!isCreator) {
             return reply("❌ *Command Restricted* - Only my creator can use this.");
-        }
+        }*/
 
         if (isGroup) {
             // Ensure group JID ends with @g.us
