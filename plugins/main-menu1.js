@@ -17,12 +17,34 @@ cmd({
 }, 
 async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
+       
+     let platformName = "Cloud/Vps"; // Default අගය
+     const hostName = os.hostname();
+     const nameLength = hostName.length;
+
+    // Platform එක නිවැරදිව හඳුනාගැනීමේ logic එක
+    if (process.env.HEROKU_APP_NAME || nameLength === 36) {
+        platformName = "Heroku";
+    } else if (process.env.KOYEB_APP_NAME || nameLength === 8) {
+        platformName = "Koyeb";
+    } else if (process.env.RAILWAY_STATIC_URL || nameLength === 12) {
+        platformName = "Railway";
+    } else if (process.env.RENDER_SERVICE_NAME || nameLength === 15) {
+        platformName = "Render";
+    } else if (process.env.PTERODACTYL || nameLength === 10) {
+        platformName = "Panel";
+    } else if (process.env.REPL_ID || nameLength === 12) {
+        platformName = "Replit";
+    } else if (process.env.SSH_TTY || nameLength === 6) {
+        platformName = "VPS";
+    } 
+        
         let dec = `
 ╭━〔 *𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳* 〕━··๏
 ┃★╭──────────────
 ┃★│ • 👑 Owner : *${config.OWNER_NAME}*
 ┃★│ • ⚙️ Prefix : *[${config.PREFIX}]*
-┃★│ • 🌐 Platform : *Heroku*
+┃★│ • 🌐 Platform : *${platformName}*
 ┃★│ • 📦 Version : *2.0.0*
 ┃★│ • ⏱️ Runtime : *${runtime(process.uptime())}*
 ┃★╰──────────────

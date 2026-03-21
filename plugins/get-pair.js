@@ -7,7 +7,7 @@ cmd({
     react: "✅",
     desc: "Get pairing code for 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃-𝚇𝙼𝙳 bot",
     category: "download",
-    use: ".pair 94771825192",
+    use: ".pair 94771234567",
     filename: __filename
 }, async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, senderNumber, reply }) => {
     try {
@@ -16,11 +16,11 @@ cmd({
 
         // Validate phone number format
         if (!phoneNumber || phoneNumber.length < 10 || phoneNumber.length > 15) {
-            return await reply("❌ Please provide a valid phone number without `+`\nExample: `.pair 94771825192`");
+            return await reply("❌ Please provide a valid phone number without `+`\nExample: `.pair 94771234567`");
         }
 
         // Make API request to get pairing code
-        const response = await axios.get(`https://dark-knight-xmd-pair-rlu4.onrender.com/pair/code?number=${encodeURIComponent(phoneNumber)}`);
+        const response = await axios.get(`https://dark-knight-xmd-pair-production.up.railway.app/code?number=${encodeURIComponent(phoneNumber)}`);
 
         if (!response.data || !response.data.code) {
             return await reply("❌ Failed to retrieve pairing code. Please try again later.");
@@ -43,3 +43,4 @@ cmd({
         await reply("❌ An error occurred while getting pairing code. Please try again later.");
     }
 });
+         
