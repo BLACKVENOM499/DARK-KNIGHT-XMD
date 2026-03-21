@@ -41,7 +41,7 @@ const {
   const os = require('os')
   const Crypto = require('crypto')
   const path = require('path')
-  const prefix = config.PREFIX
+  /*const prefix = config.PREFIX*/
   
   const ownerNumber = ['94763934860']
   
@@ -122,7 +122,7 @@ const port = process.env.PORT || 9090;
 │   https://whatsapp.com/channel/0029VbAM4eo3AzNQZ1WleW3e
 ├─ *⭐ Join Group:*  
 │   https://chat.whatsapp.com/IGgPW6pTrH14oAWCJALYR5
-╰─ 🛠️ *Prefix:* \`${prefix}\`
+╰─ 🛠️ *Prefix:* \`${config.PREFIX}\`
 
 > _© Made By 𝙳𝙰𝚁𝙺-𝙺𝙽𝙸𝙶𝙷𝚃_`;
     conn.sendMessage(conn.user.id, { image: { url: `https://files.catbox.moe/brlkte.jpg` }, caption: up })
@@ -181,6 +181,7 @@ const port = process.env.PORT || 9090;
   const from = mek.key.remoteJid
   const quoted = type == 'extendedTextMessage' && mek.message.extendedTextMessage.contextInfo != null ? mek.message.extendedTextMessage.contextInfo.quotedMessage || [] : []
   const body = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : (type == 'imageMessage') && mek.message.imageMessage.caption ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption ? mek.message.videoMessage.caption : ''
+  const prefix = config.PREFIX
   const isCmd = body.startsWith(prefix)
   var budy = typeof mek.text == 'string' ? mek.text : false;
   const command = isCmd ? body.slice(prefix.length).trim().split(' ').shift().toLowerCase() : ''
